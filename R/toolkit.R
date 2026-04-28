@@ -6,12 +6,6 @@ library(tidyverse)
 library(tigris)
 library(viridis)
 
-create_mm_project <- function(dir_name) {
-  dir_create(dir_name)
-  dir_create(path(dir_name, c("data")))
-}
-
-
 map_theme <- function(base_size = 12, title_size = 16) {
   theme(
     text = element_text(color = "black"),
