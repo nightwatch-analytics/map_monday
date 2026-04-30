@@ -1,14 +1,7 @@
-library(dplyr)
+# setup ----
 library(findSVI)
-library(ggplot2)
-library(sf)
-library(tigris)
-library(viridis)
 
 source("R/toolkit.R")
-
-# setup ----
-options(tigris_use_cache = TRUE)
 
 # import ----
 
@@ -16,18 +9,22 @@ harris_tracts24 <- get_acs("tract",
   variables = as.vector(
     unlist(census_variables_2022)
   ),
-  state = "TX", county = "Harris County",
-  output = "wide", geometry = T
+  county = "Harris County",
+  state = "TX",
+  output = "wide",
+  geometry = T
 )
 
 harris_svi_raw <- get_svi(2022, harris_tracts24)
 
-harris <- counties(state = "TX", cb = TRUE) %>%
-  filter(NAME == "Harris")
 # tidy ----
 harris_svi <- harris_svi_raw %>%
-  select(GEOID, contains("theme"))
+  select(
+    GEOID,
+    contains("theme")
+  )
 
+# transform ----
 harris_svi_byTheme <- harris_svi %>%
   select(GEOID,
     "Socioeconomics" = RPL_theme1,
@@ -44,15 +41,15 @@ harris_svi_byTheme <- harris_svi %>%
       "Housing/Transportation"
     )
   ))
-# transform ----
-
 # visualize ----
 ggplot() +
   geom_sf(data = harris_svi, aes(fill = RPL_themes)) +
   scale_fill_viridis(option = "A", name = "SVI", direction = -1) +
-  labs(title = "SVI 2024",
-       subtitle = "Harris County",
-       caption = "Note that this calculation uses an accepted methodology from 2022") +
+  labs(
+    title = "SVI 2024",
+    subtitle = "Harris County",
+    caption = "Note that this calculation uses an accepted methodology from 2022."
+  ) +
   map_theme()
 
 ggplot() +
@@ -65,4 +62,3 @@ ggplot() +
     caption = "Note that this calculation uses an accepted methodology from 2022"
   ) +
   map_theme()
-# model ----
