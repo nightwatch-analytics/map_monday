@@ -1,7 +1,7 @@
 # setup ----
-library(findSVI)
 
 source("R/toolkit.R")
+library(findSVI)
 
 # import ----
 
