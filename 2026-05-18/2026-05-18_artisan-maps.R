@@ -1,5 +1,5 @@
 # setup ----
-source("toolkit.R")
+source("2026-05-18/toolkit.R")
 
 places <- c("Austin", "Dallas", "Fort Worth", "Houston", "San Antonio")
 set_overpass_url("https://overpass-api.de/api/interpreter")
@@ -34,10 +34,7 @@ roads_a <- query %>%
     value = c(
       "motorway",
       "trunk",
-      "primary",
-      "motorway_link", 
-      "trunk_link",
-      "primary_link"
+      "primary"
     )
   ) %>%
   osmdata_sf()
@@ -46,9 +43,7 @@ roads_b <- query %>%
   add_osm_feature(
     key = "highway",
     value = c(
-      "secondary",
-      "tertiary",
-      "unclassified"
+      "secondary"
     )
   ) %>%
   osmdata_sf()
@@ -96,26 +91,26 @@ rec_cropped <- st_crop(rec$osm_polygons, bbox)
 water_colour <- "cadetblue3"
 roads_a_colour <- "#000000"
 roads_b_colour <- "#171717"
-natural_colour <- "#879682"
-rec_colour <- "#c1cbba"
+natural_colour <- "#879600"
+rec_colour <- "#8cb369"
 bkgd_colour <- "#f0f0f0"
 
 plt <- ggplot() +
   # rivers
   geom_sf(
-    data = water_a_cropped, fill = water_colour, colour = NA
+    data = water_a_cropped, fill = water_colour, color = NA
   ) +
   # other bodies of water
   geom_sf(
-    data = water_b_cropped, fill = water_colour, colour = NA
+    data = water_b_cropped, fill = water_colour, color = NA
   ) +
   # natural vegetation
   geom_sf(
-    data = natural_cropped, fill = natural_colour, colour = NA
+    data = natural_cropped, fill = natural_colour, color = NA
   ) +
   # recreational spaces
   geom_sf(
-    data = rec_cropped, fill = rec_colour, colour = NA
+    data = rec_cropped, fill = rec_colour, color = NA
   ) +
   # major roads
   geom_sf(
@@ -138,7 +133,7 @@ city <- "HOUSTON"
 country <- "TEXAS"
 coordinates <- "29.7608°N | 95.3695°W"
 
-sysfonts::font_add_google(name = "Courier Prime")
+sysfonts::font_add_google(name = "Montserrat")
 png("houston-map.png",
   width = 8,
   height = 10,
@@ -180,7 +175,7 @@ grid.text(
   city,
   just = "right",
   gp = gpar(
-    fontfamily = "Montserrat",
+    fontfamily = font,
     fontsize = 36,
     col = text_colour
   )
