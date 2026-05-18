@@ -5,17 +5,17 @@ places <- c("Austin", "Dallas", "Fort Worth", "Houston", "San Antonio")
 set_overpass_url("https://overpass-api.de/api/interpreter")
 
 # import ----
-bbox <- get_bbox_sf("Houston")
+bbox <- get_bbox_sf("Dallas")
 query <- opq(bbox = bbox)
 
-water_a <- query %>%
+rivers <- query %>%
   add_osm_feature(
     key = "natural",
     value = "water"
   ) %>%
   osmdata_sf()
 
-water_b <- query %>%
+lakes <- query %>%
   add_osm_feature(
     key = "water",
     value = c(
@@ -23,7 +23,8 @@ water_b <- query %>%
       "canal",
       "pond",
       "basin",
-      "lock"
+      "lock",
+      "reservoir"
     )
   ) %>%
   osmdata_sf()
@@ -32,9 +33,8 @@ roads_a <- query %>%
   add_osm_feature(
     key = "highway",
     value = c(
-      "motorway",
-      "trunk",
-      "primary"
+      "motorway", "trunk", "primary",
+      "motorway_link", "trunk_link", "primary_link"
     )
   ) %>%
   osmdata_sf()
@@ -43,7 +43,8 @@ roads_b <- query %>%
   add_osm_feature(
     key = "highway",
     value = c(
-      "secondary"
+      "secondary", "tertiary", "unclassified", "residential",
+      "secondary_link", "tertiary_link"
     )
   ) %>%
   osmdata_sf()
@@ -54,17 +55,17 @@ natural <- query %>%
     value = c(
       "wood",
       "grassland",
-      "scrub"
+      "scrub",
+      "wetland",
     )
   ) %>%
   osmdata_sf()
 
-natural_valid <- natural$osm_polygons %>%
-  sf::st_make_valid(
-    s2_options = s2::s2_options(
-      split_crossing_edges = TRUE
-    )
-  )
+meadow <- query %>%
+  add_osm_feature(
+    key = "natural"
+  ) %>%
+  osmdata_sf()
 
 rec <- query %>%
   add_osm_features(
@@ -76,6 +77,14 @@ rec <- query %>%
   osmdata_sf()
 
 # tidy ----
+natural_valid <- natural$osm_polygons %>%
+  sf::st_make_valid(
+    s2_options = s2::s2_options(
+      split_crossing_edges = TRUE
+    )
+  )
+
+water_a_cropped <- st_crop(water_a$osm_multipolygons, bbox)
 water_a_cropped <- st_crop(water_a$osm_multipolygons, bbox)
 water_b_cropped <- st_crop(water_b$osm_polygons, bbox)
 roads_a_cropped <- st_crop(roads_a$osm_lines, bbox)
@@ -89,13 +98,13 @@ rec_cropped <- st_crop(rec$osm_polygons, bbox)
 # define colour palette
 
 water_colour <- "cadetblue3"
-roads_a_colour <- "#000000"
+roads_a_colour <- "#"
 roads_b_colour <- "#171717"
 natural_colour <- "#879600"
 rec_colour <- "#8cb369"
-bkgd_colour <- "#f0f0f0"
+bkgd_colour <- "#f4f1de"
 
-plt <- ggplot() +
+ggplot() +
   # rivers
   geom_sf(
     data = water_a_cropped, fill = water_colour, color = NA

@@ -14,3 +14,11 @@ get_bbox_sf <- function(place) {
 }
 
 # tidy ----
+
+validate_features <- function(feature) {
+  sf::st_make_valid(feature,
+    s2_options = s2::s2_options(
+      split_crossing_edges = TRUE
+    )
+  )
+}
